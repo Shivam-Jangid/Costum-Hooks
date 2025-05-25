@@ -14,21 +14,32 @@ function useCounter(){
 
 function usefetch(url){
   const [data, setFinalData] = useState({});
+  const [loading,setLoading] = useState(false);
   async function fetchUrlData(){
+    setLoading(true);
     const res = await fetch(url);
     const resData = await res.json();
-    console.log(resData)
-    setFinalData(resData);  
+    console.log(resData);
+    setFinalData(resData);
+    setLoading(false);
+
   }
   useEffect(function (){
     fetchUrlData();
-  },[])
-  return {data};
+  },[url]);
+
+  // useEffect(()=>{
+  //   let clock = setInterval(fetchUrlData,1000);
+  //   console.log(clock)
+  //   return clearInterval(clock);
+  // },[])
+
+  return {data, loading};
 }
 
 function App() {
   const jokesApi = "https://v2.jokeapi.dev/joke/Any";
-  const {data} = usefetch(jokesApi);
+  const {data,loading} = usefetch(jokesApi);
   function renderJokes(data){
     if(data.type === 'single'){
       return data.joke
@@ -48,8 +59,7 @@ function App() {
   }
   return <div>
     {/* <button onClick={increaseCount}>Increase {count}</button> */}
-    {/* {fetchData?{data}:"no valid url"} */}
-    {renderJokes(data)}
+    {loading?"Loading":renderJokes(data)}
   </div>
 }
 
